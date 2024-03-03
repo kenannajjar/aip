@@ -3,30 +3,40 @@ import { ReactComponent as DropdownIcon } from '../../assets/dropdown.svg'; // C
 import './MainContent.css';
 
 const MainContent = () => {
+  // State and refs
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('Mistral');
   const dropdownRef = useRef(null);
 
-  const toggleDropdown = () => setIsOpen(!isOpen);
+  // Toggle dropdown open/close
+  const toggleDropdown = useCallback(() => {
+    setIsOpen(!isOpen);
+  }, [isOpen]);
 
+  // Select an option and close dropdown
+  const selectOption = useCallback((option) => {
+    setSelectedOption(option);
+    setIsOpen(false);
+  }, []);
+
+  // Close dropdown when clicking outside
   const handleClickOutside = useCallback((event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setIsOpen(false);
     }
-  }, [dropdownRef]); 
+  }, []);
 
+  // Effect to add/remove event listener for outside clicks
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
+    const handleMouseDown = (event) => handleClickOutside(event);
+    
+    document.addEventListener("mousedown", handleMouseDown);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleMouseDown);
     };
-  }, [handleClickOutside]); 
+  }, [handleClickOutside]);
 
-  const selectOption = (option) => {
-    setSelectedOption(option);
-    setIsOpen(false); 
-  };
-
+  // Render
   return (
     <div className="main-content">
       <div className={`dropdown-menu ${isOpen ? 'active' : ''}`} onClick={toggleDropdown}>

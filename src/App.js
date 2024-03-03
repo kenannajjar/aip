@@ -8,6 +8,7 @@ const App = () => {
   return (
     <div className="app">
       <MainContent />
+      <InputArea />
     </div>
   );
 };
