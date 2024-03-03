@@ -1,83 +1,82 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ReactComponent as DropdownIcon } from '../../assets/dropdown.svg'; // Corrected import name
+import { ReactComponent as DropdownIcon } from '../../assets/dropdown.svg';
 import './MainContent.css';
-import profilePic from '../../assets/defaultuser.png'; 
+import profilePic from '../../assets/defaultuser.png';
 
 
-const MainContent = ({messages}) => {
-  // State and refs
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState('Mistral');
-  const dropdownRef = useRef(null);
+const MainContent = ({ messages, onOptionChange, selectedOption }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef(null);
 
-  const messagesEndRef = useRef(null); // Create a ref
+    const isLocked = messages.length > 0;
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView();
-  };
+    const messagesEndRef = useRef(null);
 
-  useEffect(() => {
-    scrollToBottom(); // Call scrollToBottom every time messages change
-  }, [messages]);
-
-  // Toggle dropdown open/close
-  const toggleDropdown = useCallback(() => {
-    setIsOpen(!isOpen);
-  }, [isOpen]);
-
-  // Select an option and close dropdown
-  const selectOption = useCallback((option) => {
-    setSelectedOption(option);
-    setIsOpen(false);
-  }, []);
-
-  // Close dropdown when clicking outside
-  const handleClickOutside = useCallback((event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setIsOpen(false);
-    }
-  }, []);
-
-  // Effect to add/remove event listener for outside clicks
-  useEffect(() => {
-    const handleMouseDown = (event) => handleClickOutside(event);
-    
-    document.addEventListener("mousedown", handleMouseDown);
-    return () => {
-      document.removeEventListener("mousedown", handleMouseDown);
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView();
     };
-  }, [handleClickOutside]);
 
-  // Render
-  return (
-    <div className="main-content">
-        <div className={`dropdown-menu ${isOpen ? 'active' : ''}`} onClick={toggleDropdown}>
-        {selectedOption}
-        <DropdownIcon className="dropdown-icon" />
-        {isOpen && (
-          <div className="dropdown-content" ref={dropdownRef}>
-            <div onClick={() => selectOption('Mistral')}>Mistral</div>
-            <div onClick={() => selectOption('Stable Diffusion')}>Stable Diffusion</div>
-            <div onClick={() => selectOption('Ollama')}>Ollama</div>
-          </div>
-        )}
-      </div>
-      <div className="messages-container">
-        {messages.map((message, index) => (
-        <div className="message">
-            <div className="header">
-            <img src={profilePic} alt="Profile" className="profile-pic" />
-            You
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
+    const toggleDropdown = useCallback(() => {
+        if (!isLocked) {
+          setIsOpen(!isOpen);
+        }
+      }, [isOpen, isLocked]);
+
+      const selectOption = useCallback((option) => {
+        if (!isLocked) {
+          onOptionChange(option);
+          setIsOpen(false);
+        }
+      }, [isLocked, onOptionChange]);
+
+    const handleClickOutside = useCallback((event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            setIsOpen(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        const handleMouseDown = (event) => handleClickOutside(event);
+
+        document.addEventListener("mousedown", handleMouseDown);
+        return () => {
+            document.removeEventListener("mousedown", handleMouseDown);
+        };
+    }, [handleClickOutside]);
+
+    return (
+        <div className="main-content">
+            <div className={`dropdown-menu ${isOpen ? 'active' : ''}`} onClick={toggleDropdown}>
+                {selectedOption}
+                <DropdownIcon className="dropdown-icon" />
+                {isOpen && (
+                    <div className="dropdown-content" ref={dropdownRef}>
+                        <div onClick={() => selectOption('Mistral')}>Mistral</div>
+                        <div onClick={() => selectOption('Stable Diffusion')}>Stable Diffusion</div>
+                        <div onClick={() => selectOption('Ollama')}>Ollama</div>
+                    </div>
+                )}
             </div>
-          <div key={index} className="message-text">
-            {message}
-          </div>
+            <div className="messages-container">
+                {messages.map((message, index) => (
+                    <div key={index} className="message">
+                        <div className="header">
+                            <img src={profilePic} alt="Profile" className="profile-pic" />
+                            You
+                        </div>
+                        <div  className="message-text">
+                            {message}
+                        </div>
+                    </div>
+                ))}
+                <div ref={messagesEndRef} /> { }
+            </div>
         </div>
-        ))}
-        <div ref={messagesEndRef} /> {/* Invisible element at the end of the messages */}
-      </div>
-    </div>
-  );
+    );
 };
 
 export default MainContent;
