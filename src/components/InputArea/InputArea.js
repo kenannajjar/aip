@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import './InputArea.css';
 import { ReactComponent as InputButtonIcon } from '../../assets/inputbutton.svg'; // Assuming SVG is in the same directory
 
-const InputArea = () => {
+const InputArea = ({ onSendMessage }) => {
+
     // State and refs
     const [inputValue, setInputValue] = useState('');
     const textareaRef = useRef(null);
@@ -14,8 +15,10 @@ const InputArea = () => {
 
     const handleSendMessage = (event) => {
         event.preventDefault();
-        console.log(inputValue);
-        setInputValue('');
+            onSendMessage(inputValue);
+            console.log(inputValue)
+            setInputValue('');
+    
     };
 
     // Handling Enter key press without adding a new line

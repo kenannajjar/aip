@@ -1,12 +1,24 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ReactComponent as DropdownIcon } from '../../assets/dropdown.svg'; // Corrected import name
 import './MainContent.css';
+import profilePic from '../../assets/defaultuser.png'; 
 
-const MainContent = () => {
+
+const MainContent = ({messages}) => {
   // State and refs
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('Mistral');
   const dropdownRef = useRef(null);
+
+  const messagesEndRef = useRef(null); // Create a ref
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView();
+  };
+
+  useEffect(() => {
+    scrollToBottom(); // Call scrollToBottom every time messages change
+  }, [messages]);
 
   // Toggle dropdown open/close
   const toggleDropdown = useCallback(() => {
@@ -39,7 +51,7 @@ const MainContent = () => {
   // Render
   return (
     <div className="main-content">
-      <div className={`dropdown-menu ${isOpen ? 'active' : ''}`} onClick={toggleDropdown}>
+        <div className={`dropdown-menu ${isOpen ? 'active' : ''}`} onClick={toggleDropdown}>
         {selectedOption}
         <DropdownIcon className="dropdown-icon" />
         {isOpen && (
@@ -50,8 +62,19 @@ const MainContent = () => {
           </div>
         )}
       </div>
-      <div className="centered-message">
-        How can I help you today?
+      <div className="messages-container">
+        {messages.map((message, index) => (
+        <div className="message">
+            <div className="header">
+            <img src={profilePic} alt="Profile" className="profile-pic" />
+            You
+            </div>
+          <div key={index} className="message-text">
+            {message}
+          </div>
+        </div>
+        ))}
+        <div ref={messagesEndRef} /> {/* Invisible element at the end of the messages */}
       </div>
     </div>
   );

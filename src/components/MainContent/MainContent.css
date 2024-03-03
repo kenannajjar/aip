@@ -1,12 +1,52 @@
 .main-content {
     position: relative;
+    overflow: hidden; /* Prevent scrolling outside the messages container */
     display: flex;
-    flex: 1;
+    flex-grow: 1;
     justify-content: center;
     align-items: center;
-    flex-direction: row;
+    flex-direction: column;
     background-color: #1f1f1f;
     color: #fff;
+  }
+
+  .header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+  }
+
+  .messages-container {
+    margin-top: 80px;
+    width: 50%;
+    height: 100%;
+    overflow-y: auto; /* Makes this container scrollable */
+    flex-grow: 1; /* Takes up available space */
+    padding: 10px; /* Adjust padding as needed */
+  }
+
+  .profile-pic {
+    width: 25px;
+    height: 25px;
+    border-radius: 25px;
+    margin-right: 5px;
+  }
+
+  .message {
+    width: 100%;
+    flex-direction: column;
+    margin-bottom: 30px;
+  }
+
+  .header {
+    flex-direction: row;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+
+  .message-text {
+    margin-left: 30px;
   }
   
   .dropdown-menu {
